@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Frank Dione Learning Hub dashboard">
+  <title>Dashboard | Frank Dione Learning Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html">
+        FD <span>Frank Dione Learning Hub</span>
+      </a>
+
+      <nav>
+        <a href="index.html">Home</a>
+        <button id="logoutBtn" class="btn btn-secondary">
+          Log out
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <div class="container">
+
+      <div class="dash-head">
+        <div>
+          <span class="eyebrow">STUDENT DASHBOARD</span>
+          <h1 id="welcome">Welcome</h1>
+          <p id="emailText"></p>
+        </div>
+
+        <div class="profile-chip" id="planChip">
+          Free
+        </div>
+      </div>
+
+      <section class="dash-grid">
+
+        <article class="dash-card">
+
+          <h2>Your profile</h2>
+
+          <form id="profileForm">
+
+            <label>
+              Full name
+              <input
+                id="fullName"
+                type="text"
+                maxlength="100"
+                required
+              >
+            </label>
+
+            <label>
+              Student number
+              <input
+                id="studentNumber"
+                type="text"
+                maxlength="50"
+              >
+            </label>
+
+            <label>
+              Institution
+              <input
+                id="institution"
+                type="text"
+                maxlength="150"
+              >
+            </label>
+
+            <button
+              class="btn btn-primary"
+              type="submit"
+            >
+              Save profile
+            </button>
+
+          </form>
+
+        </article>
+
+        <article class="dash-card">
+
+          <div class="card-title-row">
+
+            <div>
+              <h2>Learning resources</h2>
+              <p>
+                Open resources available to your account.
+              </p>
+            </div>
+
+          </div>
+
+          <div
+            id="documents"
+            class="documents"
+          >
+            <div class="loading">
+              Loading resources…
+            </div>
+          </div>
+
+        </article>
+
+      </section>
+
+    </div>
+  </main>
+
+  <div
+    class="viewer"
+    id="viewer"
+    aria-hidden="true"
+  >
+
+    <div class="viewer-top">
+
+      <strong id="viewerTitle">
+        Document
+      </strong>
+
+      <button
+        id="closeViewer"
+        class="btn btn-secondary"
+      >
+        Close
+      </button>
+
+    </div>
+
+    <div class="viewer-body">
+
+      <iframe
+        id="documentFrame"
+        title="Learning resource viewer"
+      ></iframe>
+
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="dashboard.js"></script>
+
+</body>
+</html>
