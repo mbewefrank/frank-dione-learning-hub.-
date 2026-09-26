@@ -5,506 +5,297 @@ const supabase = window.supabase.createClient(
   cfg.SUPABASE_PUBLISHABLE_KEY
 );
 
-const modal = document.getElementById("authModal");
-const authContent = document.getElementById("authContent");
-const toastEl = document.getElementById("toast");
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("authModal");
+  const authContent = document.getElementById("authContent");
+  const toastEl = document.getElementById("toast");
+  const yearEl = document.getElementById("year");
 
-document.getElementById("year").textContent =
-  new Date().getFullYear();
-
-
-/* =========================
-   TOAST
-========================= */
-
-function toast(message, type = "") {
-  toastEl.textContent = message;
-  toastEl.className = `toast show ${type}`;
-
-  setTimeout(() => {
-    toastEl.className = "toast";
-  }, 3200);
-}
-
-
-/* =========================
-   AUTH MODAL
-========================= */
-
-function openAuth(mode = "login") {
-
-  modal.setAttribute("aria-hidden", "false");
-
-  if (mode === "register") {
-    authContent.innerHTML = registerForm();
-  } else {
-    authContent.innerHTML = loginForm();
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
   }
 
-  bindAuthForms();
-}
+  function toast(message, type = "") {
+    if (!toastEl) {
+      alert(message);
+      return;
+    }
 
+    toastEl.textContent = message;
+    toastEl.className = `toast show ${type}`;
 
-function closeAuth() {
-  modal.setAttribute("aria-hidden", "true");
-}
+    setTimeout(() => {
+      toastEl.className = "toast";
+    }, 3200);
+  }
 
+  function openAuth(mode = "login") {
+    if (!modal || !authContent) {
+      alert("Authentication window could not be opened.");
+      return;
+    }
 
-document
-  .querySelectorAll("[data-close]")
-  .forEach(element => {
-    element.addEventListener("click", closeAuth);
-  });
+    modal.setAttribute("aria-hidden", "false");
 
+    authContent.innerHTML =
+      mode === "register"
+        ? registerForm()
+        : loginForm();
 
-/* =========================
-   NAVIGATION
-========================= */
+    bindAuthForms();
+  }
 
-document
-  .getElementById("loginNav")
-  .addEventListener("click", event => {
+  function closeAuth() {
+    if (modal) {
+      modal.setAttribute("aria-hidden", "true");
+    }
+  }
 
+  function loginForm() {
+    return `
+      <div class="auth-head">
+        <span class="eyebrow">WELCOME BACK</span>
+        <h2>Log in</h2>
+        <p>Access your learning dashboard.</p>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>
+          Email
+          <input name="email" type="email" required>
+        </label>
+
+        <label>
+          Password
+          <input name="password" type="password" required>
+        </label>
+
+        <button class="btn btn-primary full" type="submit">
+          Log in
+        </button>
+      </form>
+
+      <p class="switch">
+        New here?
+        <button type="button" id="switchRegister">
+          Create an account
+        </button>
+      </p>
+    `;
+  }
+
+  function registerForm() {
+    return `
+      <div class="auth-head">
+        <span class="eyebrow">JOIN THE HUB</span>
+        <h2>Create account</h2>
+        <p>Start with a free student account.</p>
+      </div>
+
+      <form id="registerForm" class="auth-form">
+        <label>
+          Full name
+          <input name="fullName" type="text" maxlength="100" required>
+        </label>
+
+        <label>
+          Email
+          <input name="email" type="email" required>
+        </label>
+
+        <label>
+          Password
+          <input name="password" type="password" minlength="6" required>
+        </label>
+
+        <label>
+          Confirm password
+          <input name="confirm" type="password" minlength="6" required>
+        </label>
+
+        <button class="btn btn-primary full" type="submit">
+          Create account
+        </button>
+      </form>
+
+      <p class="switch">
+        Already registered?
+        <button type="button" id="switchLogin">
+          Log in
+        </button>
+      </p>
+    `;
+  }
+
+  function bindAuthForms() {
+    const switchRegister =
+      document.getElementById("switchRegister");
+
+    const switchLogin =
+      document.getElementById("switchLogin");
+
+    const login =
+      document.getElementById("loginForm");
+
+    const register =
+      document.getElementById("registerForm");
+
+    if (switchRegister) {
+      switchRegister.addEventListener("click", () => {
+        openAuth("register");
+      });
+    }
+
+    if (switchLogin) {
+      switchLogin.addEventListener("click", () => {
+        openAuth("login");
+      });
+    }
+
+    if (login) {
+      login.addEventListener("submit", loginUser);
+    }
+
+    if (register) {
+      register.addEventListener("submit", registerUser);
+    }
+  }
+
+  async function loginUser(event) {
     event.preventDefault();
 
-    openAuth("login");
-  });
+    const formData = new FormData(event.currentTarget);
 
+    const email = formData.get("email");
+    const password = formData.get("password");
 
-document
-  .getElementById("registerNav")
-  .addEventListener("click", event => {
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
+    if (error) {
+      toast(error.message, "error");
+      return;
+    }
+
+    window.location.href = "dashboard.html";
+  }
+
+  async function registerUser(event) {
     event.preventDefault();
 
-    openAuth("register");
-  });
+    const formData = new FormData(event.currentTarget);
 
+    const fullName = formData.get("fullName");
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const confirm = formData.get("confirm");
 
-document
-  .querySelectorAll('a[href="#login"]')
-  .forEach(link => {
+    if (password !== confirm) {
+      toast("Passwords do not match.", "error");
+      return;
+    }
 
-    link.addEventListener("click", event => {
+    const { data, error } =
+      await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+      });
 
-      event.preventDefault();
+    if (error) {
+      toast(error.message, "error");
+      return;
+    }
+
+    if (data.session) {
+      window.location.href = "dashboard.html";
+    } else {
+      toast(
+        "Account created. Check your email for confirmation.",
+        "success"
+      );
 
       openAuth("login");
-    });
-  });
-
-
-document
-  .querySelectorAll('a[href="#register"]')
-  .forEach(link => {
-
-    link.addEventListener("click", event => {
-
-      event.preventDefault();
-
-      openAuth("register");
-    });
-  });
-
-
-/* =========================
-   LOGIN FORM
-========================= */
-
-function loginForm() {
-
-  return `
-    <div class="auth-head">
-
-      <span class="eyebrow">
-        WELCOME BACK
-      </span>
-
-      <h2>
-        Log in
-      </h2>
-
-      <p>
-        Access your learning dashboard.
-      </p>
-
-    </div>
-
-
-    <form id="loginForm" class="auth-form">
-
-      <label>
-        Email
-
-        <input
-          name="email"
-          type="email"
-          autocomplete="email"
-          required
-        >
-
-      </label>
-
-
-      <label>
-        Password
-
-        <input
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          minlength="6"
-          required
-        >
-
-      </label>
-
-
-      <button
-        class="btn btn-primary full"
-        type="submit"
-      >
-        Log in
-      </button>
-
-    </form>
-
-
-    <p class="switch">
-
-      New here?
-
-      <button id="switchRegister">
-        Create an account
-      </button>
-
-    </p>
-  `;
-}
-
-
-/* =========================
-   REGISTER FORM
-========================= */
-
-function registerForm() {
-
-  return `
-    <div class="auth-head">
-
-      <span class="eyebrow">
-        JOIN THE HUB
-      </span>
-
-      <h2>
-        Create account
-      </h2>
-
-      <p>
-        Start with a free student account.
-      </p>
-
-    </div>
-
-
-    <form id="registerForm" class="auth-form">
-
-      <label>
-        Full name
-
-        <input
-          name="fullName"
-          type="text"
-          maxlength="100"
-          required
-        >
-
-      </label>
-
-
-      <label>
-        Email
-
-        <input
-          name="email"
-          type="email"
-          autocomplete="email"
-          required
-        >
-
-      </label>
-
-
-      <label>
-        Password
-
-        <input
-          name="password"
-          type="password"
-          autocomplete="new-password"
-          minlength="6"
-          required
-        >
-
-      </label>
-
-
-      <label>
-        Confirm password
-
-        <input
-          name="confirm"
-          type="password"
-          autocomplete="new-password"
-          minlength="6"
-          required
-        >
-
-      </label>
-
-
-      <button
-        class="btn btn-primary full"
-        type="submit"
-      >
-        Create account
-      </button>
-
-    </form>
-
-
-    <p class="switch">
-
-      Already registered?
-
-      <button id="switchLogin">
-        Log in
-      </button>
-
-    </p>
-  `;
-}
-
-
-/* =========================
-   FORM BINDING
-========================= */
-
-function bindAuthForms() {
-
-  const registerButton =
-    document.getElementById("switchRegister");
-
-  const loginButton =
-    document.getElementById("switchLogin");
-
-  const login =
-    document.getElementById("loginForm");
-
-  const register =
-    document.getElementById("registerForm");
-
-
-  if (registerButton) {
-
-    registerButton.addEventListener(
-      "click",
-      () => openAuth("register")
-    );
-
+    }
   }
 
-
-  if (loginButton) {
-
-    loginButton.addEventListener(
-      "click",
-      () => openAuth("login")
-    );
-
-  }
-
-
-  if (login) {
-
-    login.addEventListener(
-      "submit",
-      loginUser
-    );
-
-  }
-
-
-  if (register) {
-
-    register.addEventListener(
-      "submit",
-      registerUser
-    );
-
-  }
-}
-
-
-/* =========================
-   LOGIN
-========================= */
-
-async function loginUser(event) {
-
-  event.preventDefault();
-
-  const formData =
-    new FormData(event.currentTarget);
-
-  const email =
-    formData.get("email");
-
-  const password =
-    formData.get("password");
-
-
-  const { error } =
-    await supabase.auth.signInWithPassword({
-
-      email: email,
-
-      password: password
-
+  // Close buttons
+  document
+    .querySelectorAll("[data-close]")
+    .forEach(element => {
+      element.addEventListener("click", closeAuth);
     });
 
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-  }
-
-
-  location.href =
-    "dashboard.html";
-}
-
-
-/* =========================
-   REGISTER
-========================= */
-
-async function registerUser(event) {
-
-  event.preventDefault();
-
-  const formData =
-    new FormData(event.currentTarget);
-
-
-  const fullName =
-    formData.get("fullName");
-
-  const email =
-    formData.get("email");
-
-  const password =
-    formData.get("password");
-
-  const confirm =
-    formData.get("confirm");
-
-
-  if (password !== confirm) {
-
-    toast(
-      "Passwords do not match.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  const { data, error } =
-    await supabase.auth.signUp({
-
-      email: email,
-
-      password: password,
-
-      options: {
-
-        data: {
-          full_name: fullName
-        }
-
-      }
-
-    });
-
-
-  if (error) {
-
-    toast(
-      error.message,
-      "error"
-    );
-
-    return;
-  }
-
-
-  if (data.session) {
-
-    location.href =
-      "dashboard.html";
-
-  } else {
-
-    toast(
-      "Account created. Check your email if email confirmation is enabled.",
-      "success"
-    );
-
-    openAuth("login");
-  }
-}
-
-
-/* =========================
-   EXISTING SESSION
-========================= */
-
-(async function init() {
-
-  const { data } =
-    await supabase.auth.getSession();
-
-
-  if (!data.session) {
-    return;
-  }
-
-
+  // Login navigation
   const loginNav =
     document.getElementById("loginNav");
 
+  if (loginNav) {
+    loginNav.addEventListener("click", event => {
+      event.preventDefault();
+      openAuth("login");
+    });
+  }
+
+  // Create account navigation
   const registerNav =
     document.getElementById("registerNav");
 
+  if (registerNav) {
+    registerNav.addEventListener("click", event => {
+      event.preventDefault();
+      openAuth("register");
+    });
+  }
 
-  loginNav.textContent =
-    "Dashboard";
+  // Hero buttons
+  document
+    .querySelectorAll('a[href="#login"]')
+    .forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        openAuth("login");
+      });
+    });
 
-  loginNav.href =
-    "dashboard.html";
+  document
+    .querySelectorAll('a[href="#register"]')
+    .forEach(link => {
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        openAuth("register");
+      });
+    });
 
+  // Check existing session
+  (async function init() {
+    const { data } =
+      await supabase.auth.getSession();
 
-  registerNav.textContent =
-    "My account";
+    if (!data.session) {
+      return;
+    }
 
-  registerNav.href =
-    "dashboard.html";
+    if (loginNav) {
+      loginNav.textContent = "Dashboard";
+      loginNav.href = "dashboard.html";
 
-})();
+      // Prevent the old login handler from opening the modal
+      loginNav.onclick = null;
+    }
+
+    if (registerNav) {
+      registerNav.textContent = "My account";
+      registerNav.href = "dashboard.html";
+
+      registerNav.onclick = null;
+    }
+  })();
+});
