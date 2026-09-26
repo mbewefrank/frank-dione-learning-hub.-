@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Frank Dione Learning Hub - access organized learning resources online.">
+  <title>Frank Dione Learning Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container nav">
+
+      <a class="brand" href="index.html">
+        FD <span>Frank Dione Learning Hub</span>
+      </a>
+
+      <nav id="mainNav">
+        <a href="#features">Features</a>
+        <a href="#plans">Plans</a>
+        <a href="#login" id="loginNav">Log in</a>
+        <a class="btn btn-primary" href="#register" id="registerNav">
+          Create account
+        </a>
+      </nav>
+
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+        ☰
+      </button>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <section class="hero">
+      <div class="container hero-grid">
+
+        <div>
+          <span class="eyebrow">
+            LEARN • ORGANIZE • PROGRESS
+          </span>
+
+          <h1>
+            Your learning resources, organized in one place.
+          </h1>
+
+          <p>
+            Access notes, assignments and study resources through a
+            simple learning hub built for students.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#register">
+              Create free account
+            </a>
+
+            <a class="btn btn-secondary" href="#features">
+              Explore features
+            </a>
+          </div>
+        </div>
+
+
+        <div class="hero-card">
+          <div class="mock-window">
+
+            <div class="mock-top">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="mock-content">
+
+              <div class="mock-line wide"></div>
+              <div class="mock-line"></div>
+
+              <div class="mock-cards">
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+
+              <div class="mock-line wide"></div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <section id="features" class="section">
+
+      <div class="container">
+
+        <div class="section-heading">
+          <span class="eyebrow">FEATURES</span>
+
+          <h2>
+            Built around studying, not clutter.
+          </h2>
+        </div>
+
+
+        <div class="feature-grid">
+
+          <article class="feature">
+            <div class="icon">📚</div>
+            <h3>Organized resources</h3>
+            <p>
+              Keep learning documents grouped by subject and course.
+            </p>
+          </article>
+
+
+          <article class="feature">
+            <div class="icon">🔐</div>
+            <h3>Student accounts</h3>
+            <p>
+              Create an account and keep your learning activity tied
+              to your profile.
+            </p>
+          </article>
+
+
+          <article class="feature">
+            <div class="icon">👁️</div>
+            <h3>Online document access</h3>
+            <p>
+              Resources can be opened inside the hub instead of
+              exposing a normal download button.
+            </p>
+          </article>
+
+
+          <article class="feature">
+            <div class="icon">📱</div>
+            <h3>Mobile friendly</h3>
+            <p>
+              Designed to work cleanly on phones, tablets and computers.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section id="plans" class="section section-alt">
+
+      <div class="container">
+
+        <div class="section-heading">
+          <span class="eyebrow">PLANS</span>
+
+          <h2>
+            Choose how you want to learn.
+          </h2>
+        </div>
+
+
+        <div class="plans">
+
+          <article class="plan">
+
+            <h3>Free</h3>
+
+            <div class="price">
+              K0
+              <small>/ forever</small>
+            </div>
+
+            <ul>
+              <li>Account creation</li>
+              <li>Free resources</li>
+              <li>Student profile</li>
+            </ul>
+
+            <a class="btn btn-secondary full" href="#register">
+              Get started
+            </a>
+
+          </article>
+
+
+          <article class="plan featured">
+
+            <span class="popular">
+              POPULAR
+            </span>
+
+            <h3>Premium</h3>
+
+            <div class="price">
+              Custom
+              <small>/ subscription</small>
+            </div>
+
+            <ul>
+              <li>Premium resources</li>
+              <li>Priority content access</li>
+              <li>Mobile Money payment flow</li>
+            </ul>
+
+            <a class="btn btn-primary full" href="#register">
+              Create account
+            </a>
+
+          </article>
+
+        </div>
+
+
+        <p class="note">
+          Payment processing will be connected separately before
+          accepting real payments.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+
+    <div class="container footer-inner">
+
+      <div>
+        <strong>
+          FD Frank Dione Learning Hub
+        </strong>
+
+        <p>
+          Learning resources, organized.
+        </p>
+      </div>
+
+      <p>
+        © <span id="year"></span>
+        Frank Dione Learning Hub
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <div class="modal" id="authModal" aria-hidden="true">
+
+    <div class="modal-backdrop" data-close></div>
+
+    <div class="modal-card">
+
+      <button
+        class="modal-close"
+        data-close
+        aria-label="Close">
+        ×
+      </button>
+
+      <div id="authContent"></div>
+
+    </div>
+
+  </div>
+
+
+  <div id="toast" class="toast"></div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
